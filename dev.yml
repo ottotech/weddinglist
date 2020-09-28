@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  weddinglist_db:
+    container_name: weddinglistdb
+    image: postgres:13.0
+    restart: always
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=weddinglist_db
+    volumes:
+      - weddinglist_db_data:/var/lib/postgresql/data
+    ports:
+    - '6666:5432'
+
+  weddinglist_bakend:
+    container_name: weddinglistbackend
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    image: weddinglist_img
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=weddinglist_db
+      - DB_PORT=5432
+      - DB_HOST=weddinglist_db
+    volumes:
+      - .:/weddinglist
+    ports:
+      - '80:8000'
+      - '8080:8080'
+    depends_on:
+      - weddinglist_db
+
+networks:
+  weddinglist_network:
+volumes:
+  weddinglist_db_data:

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weddinglist</title>
+    <link href="{% static '/css/weddinglist.css' %}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<form action="{% url 'login' %}" method="post" class="sky-form boxed">
+    <h1>LogIn</h1>
+
+{% if form.errors %}
+    <ul class="errorlist"><li>Wrong credential, please try again.</li></ul>
+{% endif %}
+
+<label for="{{ form.username.id_for_label }}">Usuario</label>
+<input class="form-control" type="text" name="{{ form.username.html_name }}" placeholder="Usuario" id="{{ form.username.id_for_label }}">
+
+<label for="{{ form.password.id_for_label }}">Password:</label>
+<input type="password" name="{{ form.password.html_name }}" placeholder="Password" id="{{ form.password.id_for_label }}">
+
+{% csrf_token %}
+<button type="submit">Login</button>
+<input type="hidden" name="next" value="{{ next }}" />
+
+</form>
+
+</body>
+</html>

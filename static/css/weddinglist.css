@@ -1,0 +1,14 @@
+/* error list */
+ul.errorlist {
+    margin: 0;
+    padding: 0;
+}
+
+.errorlist li {
+    color: #db0000;
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0 0 3px;
+    padding: 4px 5px;
+}

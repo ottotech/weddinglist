@@ -6,8 +6,7 @@ ENV PYTHONUNBUFFERED=1
 RUN mkdir /weddinglist
 COPY . /weddinglist
 WORKDIR /weddinglist
-RUN pip3 install --upgrade pip \
-    && pip3 install -r requirements.txt
+RUN pip3 install --upgrade pip
 
 # Start processes.
 RUN ["chmod", "+x", "/weddinglist/dev-docker-entrypoint.sh"]

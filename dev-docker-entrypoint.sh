@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "Install requirements"
+pip3 install -r requirements.txt
+
 echo "Check for new migrations"
 python3 manage.py makemigrations
 

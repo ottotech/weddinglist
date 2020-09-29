@@ -9,7 +9,7 @@ class StorageABC(ABC):
         pass
 
     @abstractmethod
-    def get_all_added_gifts(self):
+    def get_all_added_gifts_of_user(self, user_id):
         pass
 
 
@@ -24,5 +24,5 @@ class Lister(StorageABC):
     def get_all_products(self):
         self.__storage.get_all_products()
 
-    def get_all_added_gifts(self):
-        self.__storage.get_all_added_gifts()
+    def get_all_added_gifts_of_user(self, user_id):
+        self.__storage.get_all_added_gifts_of_user(user_id=user_id)

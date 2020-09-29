@@ -20,13 +20,13 @@ class Gift(models.Model):
         ]
 
     @property
-    def in_stock_qty(self):
+    def in_stock_qty(self) -> int:
         return self.inventory.quantity
 
 
 class Inventory(models.Model):
     gift = models.OneToOneField(to=Gift, on_delete=models.CASCADE)
-    quantity = models.FloatField()
+    quantity = models.IntegerField()
 
 
 class GiftList(models.Model):
@@ -37,4 +37,9 @@ class GiftList(models.Model):
 
     user = models.ForeignKey(to=User, on_delete=models.PROTECT)
     gift = models.ForeignKey(to=Gift, on_delete=models.PROTECT)
-    status = models.CharField(max_length=20, choices=GIFT_STATE_CHOICES)
+    status = models.CharField(max_length=20, choices=GIFT_STATE_CHOICES, default="notpurchased")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "gift"], name="unique_user_gift_list")
+        ]

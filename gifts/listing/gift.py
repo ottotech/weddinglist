@@ -10,6 +10,7 @@ from gifts.listing.user import User
 class Gift(object):
 
     __slots__ = [
+        "__gift_id",
         "__name",
         "__brand",
         "__price",
@@ -17,12 +18,17 @@ class Gift(object):
         "__stock"
     ]
 
-    def __init__(self, name: str, brand: Brand, price: Decimal, active: bool, stock: int):
+    def __init__(self, gift_id: int, name: str, brand: Brand, price: Decimal, active: bool, stock: int):
+        self.__gift_id = gift_id
         self.__name = name
         self.__brand = brand
         self.__price = price
         self.__active = active
         self.__stock = stock
+
+    @property
+    def gift_id(self):
+        return self.__gift_id
 
     @property
     def name(self):

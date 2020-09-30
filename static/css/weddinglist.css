@@ -12,3 +12,11 @@ ul.errorlist {
     margin: 0 0 3px;
     padding: 4px 5px;
 }
+
+table, td, th {
+  border: 1px solid black;
+}
+
+table {
+  border-collapse: collapse;
+}

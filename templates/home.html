@@ -1,14 +1,88 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="{% static '/css/weddinglist.css' %}" rel="stylesheet" type="text/css" />
 </head>
 <body>
+<span><strong>Hello, {{ request.user.get_full_name|default:request.user.username }}.</strong></span>
+<br><br>
 <form action="/logout" method="post">
     {% csrf_token %}
     <button type="submit">Logout</button>
 </form>
-<h1>Available Products</h1>
+<br>
+<div style="width: 100%;">
+    <div style="width: 50%; float: left;">
+        <span><strong>gifts available:</strong></span>
+        <br>
+        <br>
+        <table id="giftsTable">
+        </table>
+    </div>
+    <div style="margin-left: 50%">
+        <span><strong>wedding list:</strong></span>
+        <table id="weddingListTable">
+        </table>
+    </div>
+</div>
+<script>
+window.onload = function show_all_gifts() {
+    let xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE){
+            if (xhr.status === 200) {
+
+                let table = document.getElementById("giftsTable");
+                let obj = JSON.parse(xhr.response);
+                let gifts = obj["gifts"];
+
+                let headerRow = document.createElement("tr");
+                let cols = ["name", "brand", "price", "stock", "action"];
+                for (let j = 0; j < cols.length; j++) {
+                   let header = document.createElement("th");
+                   header.innerHTML = cols[j];
+                   headerRow.appendChild(header);
+                }
+
+                table.appendChild(headerRow);
+
+                for (let i = 0; i < gifts.length; i++) {
+                   let giftObj = gifts[i];
+                   let row = document.createElement("tr");
+                   let nameCell = document.createElement("td");
+                   nameCell.innerHTML = giftObj["name"];
+                   let brandCell = document.createElement("td");
+                   brandCell.innerHTML = giftObj["brand_name"];
+                   let priceCell = document.createElement("td");
+                   priceCell.innerHTML = giftObj["price"];
+                   let stockCell = document.createElement("td");
+                   stockCell.innerHTML = giftObj["stock"];
+
+                   let addBtn = document.createElement("button");
+                   addBtn.type = "button";
+                   addBtn.innerText = "Add";
+                   addBtn.setAttribute("data-product_id", giftObj["gift_id"]);
+
+                   row.appendChild(nameCell);
+                   row.appendChild(brandCell);
+                   row.appendChild(priceCell);
+                   row.appendChild(stockCell);
+                   row.appendChild(addBtn);
+                   table.appendChild(row)
+                }
+
+            } else {
+                alert(xhr.responseText)
+            }
+        }
+    };
+    xhr.open("GET", "/api/v1/gifts");
+    xhr.send();
+};
+
+</script>
 </body>
 </html>

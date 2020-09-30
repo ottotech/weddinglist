@@ -20,11 +20,12 @@ class PSQLStorage(object):
 
         for obj in objs:
             gift = listing.Gift(
+                gift_id=obj.id,
                 name=obj.name,
                 brand=listing.Brand(name=obj.brand.name),
                 price=obj.price,
                 active=obj.active,
-                stock=obj.in_stock_qty
+                stock=obj.in_stock_qty if hasattr(obj, "inventory") else 0
             )
             gift_list.append(gift)
 
@@ -46,6 +47,7 @@ class PSQLStorage(object):
 
         for obj in qs:
             user_gift = listing.UserGift(
+                gift_id=obj.gift.id,
                 name=obj.gift.name,
                 brand=obj.gift.brand,
                 price=obj.gift.price,

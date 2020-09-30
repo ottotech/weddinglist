@@ -8,7 +8,7 @@ from gifts.listing import Gift
 from gifts.listing import UserWeddingList
 
 
-class StorageABC(ABC):
+class _StorageABC(ABC):
     @abstractmethod
     def get_all_gifts_available(self) -> List[Gift]:
         pass
@@ -18,7 +18,7 @@ class StorageABC(ABC):
         pass
 
 
-class Lister(StorageABC):
+class Lister(_StorageABC):
 
     __slots__ = [
         "__storage"

@@ -34,9 +34,10 @@ class PSQLStorage(object):
     @staticmethod
     def get_user_wedding_list(user_id: int) -> listing.UserWeddingList:
         user_obj = User.objects.get(id=user_id)
+
         user = listing.User(
             user_id=user_obj.id,
-            name=user_obj.name,
+            name=user_obj.first_name,
             last_name=user_obj.last_name,
             email=user_obj.email
         )

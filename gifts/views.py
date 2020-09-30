@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 from gifts.listing.service import Lister
 from gifts.storage.django_orm import PSQLStorage
 
+from rest_framework.views import APIView
 
 # Setup storage
 storage = None
@@ -40,26 +41,26 @@ def show_all_gifts(request, service=lister):
     )
 
 
-@require_http_methods(["GET"])
-def get_user_wedding_list(request, service=lister):
+class UserWeddingListApiView(APIView):
 
-    user_wedding_list = service.get_user_wedding_list(request.user.id)
+    def get(self, request, service=lister):
 
-    user_id = user_wedding_list.user.user_id
+        user_wedding_list = service.get_user_wedding_list(request.user.id)
 
-    gifts = [
-        {"gift_id": g.gift_id,
-         "name": g.name,
-         "brand_name": g.brand.name,
-         "price": g.price,
-         "active": g.active,
-         "stock": g.stock,
-         "status": g.stock}
-        for g in user_wedding_list.list
-    ]
+        user_id = user_wedding_list.user.user_id
 
-    return JsonResponse({"user_id": user_id, "gifts": gifts}, status=200)
+        gifts = [
+            {"gift_id": g.gift_id,
+             "name": g.name,
+             "brand_name": g.brand.name,
+             "price": g.price,
+             "active": g.active,
+             "stock": g.stock,
+             "status": g.stock}
+            for g in user_wedding_list.list
+        ]
 
+        return JsonResponse({"user_id": user_id, "gifts": gifts}, status=200)
 
 
 

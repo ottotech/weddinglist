@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wedding List</title>
+</head>
+<body>
+<span><strong>Hello, {{ request.user.get_full_name|default:request.user.username }}.</strong></span>
+<br><br>
+<form action="/logout" method="post">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+<br>
+<a href="/">Go back</a>
+
+<form>
+<h3>Add guest to your wedding list</h3>
+
+
+<label for="id_username">Usuario</label>
+<input type="text" name="username" placeholder="Username" id="id_username">
+<br>
+<br>
+<label for="id_password">Password:</label>
+<input type="password" name="password" placeholder="Password" id="id_password">
+<br>
+<br>
+<label for="id_fname">First Name:</label>
+<input type="text" name="fname" placeholder="Name" id="id_fname">
+<br>
+<br>
+<label for="id_lname">Last Name:</label>
+<input type="text" name="lname" placeholder="Last Name" id="id_lname">
+
+{% csrf_token %}
+<br>
+<br>
+<button type="button">Add</button>
+
+</form>
+
+<script>
+    function addGuest() {
+
+    let firstName = document.getElementById("id_fname").value;
+    let lastName = document.getElementById("id_lname").value;
+    let username = document.getElementById("id_username").value;
+    let password = document.getElementById("id_password").value;
+
+    if (firstName === "" || lastName === "" || username === "" || password === "") {
+        alert("Please fill out all form fields.");
+        return
+    }
+
+
+    let xhr = new XMLHttpRequest();
+    let formData = new FormData();
+    let csrftoken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+
+    let userID = "{{ request.user.id }}";
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE){
+            if (xhr.status === 200) {
+                window.location = "/";
+            } else if (xhr.status === 400){
+                let obj = JSON.parse(xhr.response);
+                alert(obj["message"]);
+            } else {
+                alert(xhr.responseText)
+            }
+        }
+    };
+    formData.append("user_id", userID);
+    formData.append("fname", firstName);
+    formData.append("lname", lastName);
+    formData.append("username", username);
+    formData.append("password", password);
+    xhr.open("POST", "/api/v1/guests");
+    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    xhr.send(formData);
+}
+</script>
+</body>
+</html>

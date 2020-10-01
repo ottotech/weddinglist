@@ -27,6 +27,10 @@
         <a href="/add-guest">Add guest</a>
         <br>
         <br>
+        <strong>Guests:</strong>
+       {% for guest in request.user.guest_inviter.all %} <br>{{ guest.user.get_full_name }} {% endfor %}
+        <br>
+        <br>
         <table id="weddingListTable">
         </table>
     </div>

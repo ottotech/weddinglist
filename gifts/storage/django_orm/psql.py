@@ -9,6 +9,7 @@ from django.db.models import F
 from gifts.models import Gift
 from gifts.models import Inventory
 from gifts.models import GiftList
+from gifts.models import Guest
 from gifts import listing
 from gifts import adding
 from gifts import deleting
@@ -94,4 +95,29 @@ class PSQLStorage(object):
         inventory = Inventory.objects.get(gift_id=gift_id)
         inventory.quantity = F("quantity") + 1
         inventory.save()
+
+    @staticmethod
+    def add_guest(user_id: int,
+                  first_name: str,
+                  last_name: str,
+                  username: str,
+                  password: str):
+
+        if Guest.objects.filter(user__username=username, inviter__pk=user_id).exists():
+            raise adding.GuestDuplicatedErr("guest has been invited already.")
+        elif User.objects.filter(username=username).exists():
+            raise adding.GuestUsernameDuplicatedErr("guest username is taken.")
+
+        inviter = User.objects.get(id=user_id)
+
+        guest = User.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            username=username,
+        )
+
+        guest.set_password(password)
+        guest.save()
+
+        Guest.objects.create(user=guest, inviter=inviter)
 

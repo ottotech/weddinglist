@@ -36,7 +36,7 @@
 {% csrf_token %}
 <br>
 <br>
-<button type="button">Add</button>
+<button type="button" onclick="addGuest()">Add</button>
 
 </form>
 
@@ -73,8 +73,8 @@
         }
     };
     formData.append("user_id", userID);
-    formData.append("fname", firstName);
-    formData.append("lname", lastName);
+    formData.append("first_name", firstName);
+    formData.append("last_name", lastName);
     formData.append("username", username);
     formData.append("password", password);
     xhr.open("POST", "/api/v1/guests");

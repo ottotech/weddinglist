@@ -31,3 +31,7 @@ class GiftAddedEvent(_DomainEvent):
 
 class GiftCouldNotBeAddedEvent(_DomainEvent):
     pass
+
+
+class GuestAddedEvent(_DomainEvent):
+    pass

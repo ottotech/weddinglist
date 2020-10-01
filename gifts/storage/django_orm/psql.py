@@ -3,15 +3,15 @@ from typing import List
 
 # Django imports
 from django.contrib.auth.models import User
-from django.utils import timezone
 from django.db.models import F
 
 # Project imports
 from gifts.models import Gift
 from gifts.models import Inventory
+from gifts.models import GiftList
 from gifts import listing
 from gifts import adding
-from gifts.models import GiftList
+from gifts import deleting
 
 
 class PSQLStorage(object):
@@ -66,23 +66,32 @@ class PSQLStorage(object):
 
     @staticmethod
     def add_gift_to_user_wedding_list(user_id: int, gift_id: int):
+        inventory = Inventory.objects.get(gift_id=gift_id)
+
+        if inventory.quantity == 0:
+            raise adding.NoStockErr
 
         if GiftList.objects.filter(user_id=user_id, gift_id=gift_id).exists():
             raise adding.DuplicatedErr("gift already exists in weeding list.")
 
-        GiftList.objects.create(
-            user_id=user_id,
-            gift_id=gift_id
-        )
+        GiftList.objects.create(user_id=user_id, gift_id=gift_id)
 
-        inventory = Inventory.objects.get(gift_id=gift_id)
         inventory.quantity = F("quantity") - 1
         inventory.save()
 
-        now = timezone.now()
-        event = adding.GiftAddedEvent(timestamp=now)
+    @staticmethod
+    def remove_gift_from_user_wedding_list(user_id: int, gift_id: int):
+        record = GiftList.objects.get(user_id=user_id, gift_id=gift_id)
 
-        return event
+        if record.status == "purchased":
+            raise deleting.GiftCouldNotBeDeletedErr(
+                "product cannot be deleted because it has been purchased "
+                "already."
+            )
 
+        record.delete()
 
+        inventory = Inventory.objects.get(gift_id=gift_id)
+        inventory.quantity = F("quantity") + 1
+        inventory.save()
 

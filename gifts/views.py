@@ -8,7 +8,11 @@ from django.db import transaction
 # Project imports
 from gifts.listing.service import Lister
 from gifts.adding.service import Adder
+from gifts.deleting.service import Deleter
+from gifts.deleting import GiftDeletedFromListEvent
+from gifts.deleting import GiftCouldNotBeDeletedErr
 from gifts.adding import GiftAddedEvent
+from gifts.adding import GiftCouldNotBeAddedEvent
 from gifts.adding import DuplicatedErr
 from gifts.storage.django_orm import PSQLStorage
 
@@ -26,6 +30,7 @@ else:
 # Let's instantiate our services
 lister = Lister(storage=storage)
 adder = Adder(storage=storage)
+deleter = Deleter(storage=storage)
 
 
 @require_http_methods(["GET"])
@@ -50,7 +55,7 @@ def show_all_gifts(request, service=lister):
 
 
 class UserWeddingListApiView(APIView):
-    http_method_names = ["get", "post"]
+    http_method_names = ["get", "post", "delete"]
 
     def get(self, request, service=lister):
 
@@ -79,9 +84,12 @@ class UserWeddingListApiView(APIView):
 
                 user_id = request.data["user_id"]
 
-                event = service.add_gift_to_user_wedding_list(user_id=user_id, gift_id=gift_id)
+                event = service.add_gift_to_user_wedding_list(
+                    user_id=user_id, gift_id=gift_id)
 
                 if event != GiftAddedEvent:
+                    if event == GiftCouldNotBeAddedEvent:
+                        return JsonResponse({"message": "Product is out of stock."}, status=400)
                     return JsonResponse({}, status=500)
 
                 return JsonResponse({}, status=200)
@@ -92,3 +100,26 @@ class UserWeddingListApiView(APIView):
         except Exception as e:
             return JsonResponse({}, status=500)
 
+    @transaction.atomic
+    def delete(self, request, service=deleter):
+        try:
+            with transaction.atomic():
+
+                gift_id = request.data["gift_id"]
+
+                user_id = request.data["user_id"]
+
+                event = service.remove_gift_from_user_wedding_list(
+                    user_id=user_id, gift_id=gift_id)
+
+                if event != GiftDeletedFromListEvent:
+                    return JsonResponse({}, status=500)
+
+                return JsonResponse({}, status=200)
+
+        except GiftCouldNotBeDeletedErr as e:
+            return JsonResponse({"message": str(e)}, status=400)
+
+        except Exception as e:
+            print(e)
+            return JsonResponse({}, status=500)

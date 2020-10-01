@@ -4,3 +4,8 @@ class Error(Exception):
 
 class DuplicatedErr(Error):
     pass
+
+
+class NoStockErr(Error):
+    pass
+

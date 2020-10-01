@@ -1,3 +1,4 @@
+
 class _DomainEvent(object):
     def __init__(self, timestamp, **kwargs):
         self.__dict__["timestamp"] = timestamp
@@ -23,9 +24,5 @@ class _DomainEvent(object):
         return not self.__eq__(other)
 
 
-class GiftAddedEvent(_DomainEvent):
-    pass
-
-
-class GiftCouldNotBeAddedEvent(_DomainEvent):
+class GiftDeletedFromListEvent(_DomainEvent):
     pass

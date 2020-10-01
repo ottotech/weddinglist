@@ -74,6 +74,7 @@ function showAllGifts() {
                    addBtn.setAttribute("data-gift-id", giftObj["gift_id"]);
                    addBtn.setAttribute("data-gift-name", giftObj["name"]);
                    addBtn.onclick = addGift;
+                   addBtn.style.cursor = "pointer";
 
                    row.appendChild(nameCell);
                    row.appendChild(brandCell);
@@ -124,16 +125,17 @@ function showWeddingList() {
                    let statusCell = document.createElement("td");
                    statusCell.innerHTML = giftObj["status"];
 
-                   let addBtn = document.createElement("button");
-                   addBtn.type = "button";
-                   addBtn.innerText = "Add";
-                   addBtn.setAttribute("data-product_id", giftObj["gift_id"]);
+                   let removeBtn = document.createElement("button");
+                   removeBtn.type = "button";
+                   removeBtn.innerText = "remove";
+                   removeBtn.setAttribute("data-product_id", giftObj["gift_id"]);
+                   removeBtn.style.cursor = "pointer";
 
                    row.appendChild(nameCell);
                    row.appendChild(brandCell);
                    row.appendChild(priceCell);
                    row.appendChild(statusCell);
-                   row.appendChild(addBtn);
+                   row.appendChild(removeBtn);
                    table.appendChild(row)
                 }
             } else {

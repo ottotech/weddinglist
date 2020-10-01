@@ -7,24 +7,21 @@ from gifts.listing.brand import Brand
 from gifts.listing.user import User
 
 
-class Gift(object):
-
+class BaseGift(object):
     __slots__ = [
         "__gift_id",
         "__name",
         "__brand",
         "__price",
         "__active",
-        "__stock"
     ]
 
-    def __init__(self, gift_id: int, name: str, brand: Brand, price: Decimal, active: bool, stock: int):
+    def __init__(self, gift_id: int, name: str, brand: Brand, price: Decimal, active: bool):
         self.__gift_id = gift_id
         self.__name = name
         self.__brand = brand
         self.__price = price
         self.__active = active
-        self.__stock = stock
 
     @property
     def gift_id(self):
@@ -46,12 +43,23 @@ class Gift(object):
     def active(self):
         return self.__active
 
+
+class Gift(BaseGift):
+
+    __slots__ = [
+        "__stock"
+    ]
+
+    def __init__(self, stock: int, *args, **kwargs):
+        super(Gift, self).__init__(*args, **kwargs)
+        self.__stock = stock
+
     @property
     def stock(self):
         return self.__stock
 
 
-class UserGift(Gift):
+class UserGift(BaseGift):
 
     __slots__ = [
         "__status"

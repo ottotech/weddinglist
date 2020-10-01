@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 # Project imports
 from gifts.models import Brand
 from gifts.models import Gift
+from gifts.models import Inventory
 
 
 class Command(BaseCommand):
@@ -42,3 +43,15 @@ class Command(BaseCommand):
                         brand=Brand.objects.get(name=g["brand"]),
                         price=price,
                     )
+
+                inv = Inventory.objects.filter(gift__name=g["name"])
+                if inv.exists():
+                    inv.get().quantity = g["in_stock_quantity"]
+                else:
+                    gift_obj = Gift.objects.get(name=g["name"])
+                    Inventory.objects.create(
+                        gift=gift_obj,
+                        quantity=g["in_stock_quantity"],
+                    )
+
+

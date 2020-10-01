@@ -1,7 +1,6 @@
 # Django imports
 from django.conf import settings
 from django.http import JsonResponse
-from django.http import HttpResponseServerError
 from django.views.decorators.http import require_http_methods
 from django.db import transaction
 

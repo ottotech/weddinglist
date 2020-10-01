@@ -25,8 +25,8 @@ class Gift(models.Model):
 
 
 class Inventory(models.Model):
-    gift = models.OneToOneField(to=Gift, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    gift = models.OneToOneField(to=Gift, on_delete=models.RESTRICT)
+    quantity = models.IntegerField(validators=[MinValueValidator(limit_value=0)])
 
 
 class GiftList(models.Model):

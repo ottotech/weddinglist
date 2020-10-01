@@ -5,3 +5,4 @@ class Error(Exception):
 class GiftCouldNotBeDeletedErr(Error):
     pass
 
+

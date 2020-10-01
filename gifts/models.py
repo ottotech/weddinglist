@@ -41,6 +41,11 @@ class Inventory(models.Model):
         return f"{self.gift.name.title()} - Inventory"
 
 
+class Guest(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    inviter = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="guest_inviter")
+
+
 class GiftList(models.Model):
     GIFT_STATE_CHOICES = (
         ("purchased", "Purchased"),
@@ -49,6 +54,7 @@ class GiftList(models.Model):
 
     user = models.ForeignKey(to=User, on_delete=models.PROTECT)
     gift = models.ForeignKey(to=Gift, on_delete=models.PROTECT)
+    buyer = models.ForeignKey(to=Guest, on_delete=models.PROTECT, blank=True, null=True)
     status = models.CharField(max_length=20, choices=GIFT_STATE_CHOICES, default="notpurchased")
 
     class Meta:
@@ -61,3 +67,5 @@ class GiftList(models.Model):
 def add_initial_inventory_for_new_gift(sender, instance, created, **kwargs):
     if created:
         Inventory.objects.create(gift=instance)
+
+

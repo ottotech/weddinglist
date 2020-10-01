@@ -2,10 +2,15 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Brand(models.Model):
     name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Gift(models.Model):
@@ -23,10 +28,17 @@ class Gift(models.Model):
     def in_stock_qty(self) -> int:
         return self.inventory.quantity
 
+    def __str__(self):
+        return f"{self.name} ({self.brand.name})"
+
 
 class Inventory(models.Model):
     gift = models.OneToOneField(to=Gift, on_delete=models.RESTRICT)
-    quantity = models.IntegerField(validators=[MinValueValidator(limit_value=0)])
+    quantity = models.IntegerField(
+        validators=[MinValueValidator(limit_value=0)], default=0)
+
+    def __str__(self):
+        return f"{self.gift.name.title()} - Inventory"
 
 
 class GiftList(models.Model):
@@ -43,3 +55,9 @@ class GiftList(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["user", "gift"], name="unique_user_gift_list")
         ]
+
+
+@receiver(post_save, sender=Gift)
+def add_initial_inventory_for_new_gift(sender, instance, created, **kwargs):
+    if created:
+        Inventory.objects.create(gift=instance)

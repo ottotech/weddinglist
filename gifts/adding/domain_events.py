@@ -1,4 +1,6 @@
 class _DomainEvent(object):
+    """base class for all events in this domain."""
+
     def __init__(self, timestamp, **kwargs):
         self.__dict__["timestamp"] = timestamp
         self.__dict__.update(kwargs)

@@ -70,8 +70,10 @@ function showWeddingListGifts() {
                    purchaseBtn.innerText = "Purchase";
                    purchaseBtn.setAttribute("data-gift-id", giftObj["gift_id"]);
                    purchaseBtn.setAttribute("data-gift-name", giftObj["name"]);
+                   purchaseBtn.setAttribute("data-user-id", obj["user_id"]);
+                   purchaseBtn.setAttribute("data-status", giftObj["status"]);
                    purchaseBtn.style.cursor = "pointer";
-                   {#addBtn.onclick = addGift;#}
+                   purchaseBtn.onclick = purchaseGift;
 
                    row.appendChild(nameCell);
                    row.appendChild(brandCell);
@@ -89,6 +91,48 @@ function showWeddingListGifts() {
     xhr.open("GET", "/api/v1/wedding-list?user_id="+userID);
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.send();
+}
+
+function purchaseGift(e) {
+    let giftName = e.target.getAttribute("data-gift-name");
+    let status = e.target.getAttribute("data-status").toUpperCase();
+
+    if (status === "PURCHASED") {
+        alert("Gift has already been purchased");
+        return;
+    }
+
+    let ok = confirm("Are you sure you want to purchase this gift ("+giftName+ ") from the weeding list?");
+
+    if (!ok) {
+        return;
+    }
+
+    let xhr = new XMLHttpRequest();
+    let formData = new FormData();
+    let csrftoken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+
+    let giftID = e.target.getAttribute("data-gift-id");
+    let userID = e.target.getAttribute("data-user-id");
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE){
+            if (xhr.status === 200) {
+                window.location = "/guest-view";
+            } else if (xhr.status === 400){
+                let obj = JSON.parse(xhr.response);
+                alert(obj["message"]);
+            } else {
+                alert("an error occurred performing this action")
+            }
+        }
+    };
+    formData.append("gift_id", giftID);
+    formData.append("user_id", userID);
+    xhr.open("PUT", "/api/v1/wedding-list");
+    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.send(formData);
 }
 </script>
 </body>

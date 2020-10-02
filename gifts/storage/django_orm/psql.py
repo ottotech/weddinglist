@@ -121,3 +121,19 @@ class PSQLStorage(object):
 
         Guest.objects.create(user=guest, inviter=inviter)
 
+    @staticmethod
+    def purchase_gift(guest_id: int, gift_id: int, user_id_of_wedding_list: int):
+        gift_list_line = GiftList.objects.get(
+            user_id=user_id_of_wedding_list,
+            gift_id=gift_id
+        )
+
+        if gift_list_line.status == "purchased":
+            return
+
+        buyer = User.objects.get(id=guest_id)
+
+        gift_list_line.status = "purchased"
+        gift_list_line.buyer = buyer.guest
+        gift_list_line.save()
+

@@ -17,6 +17,8 @@ from gifts.adding import GiftCouldNotBeAddedEvent
 from gifts.adding import DuplicatedErr
 from gifts.adding import GuestDuplicatedErr
 from gifts.adding import GuestUsernameDuplicatedErr
+from gifts.purchasing import Purchaser
+from gifts.purchasing import GiftPurchasedEvent
 from gifts.storage.django_orm import PSQLStorage
 
 # Third party imports
@@ -36,6 +38,7 @@ else:
 lister = Lister(storage=storage)
 adder = Adder(storage=storage)
 deleter = Deleter(storage=storage)
+purchaser = Purchaser(storage=storage)
 
 
 @login_required
@@ -60,7 +63,7 @@ def show_all_gifts(request, service=lister):
 
 
 class UserWeddingListApiView(APIView):
-    http_method_names = ["get", "post", "delete"]
+    http_method_names = ["get", "post", "delete", "put"]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     def get(self, request, service=lister):
@@ -129,6 +132,18 @@ class UserWeddingListApiView(APIView):
             print(e)
             return JsonResponse({}, status=500)
 
+    def put(self, request, service=purchaser):
+        gift_id = request.POST.get("gift_id", "")
+        user_id = request.POST.get("user_id", "")
+
+        if gift_id == "" or user_id == "":
+            return JsonResponse({"message": "missing fields"}, status=400)
+
+        event = service.purchase_gift(
+            guest_id=request.user.id, gift_id=gift_id, user_id_of_wedding_list=user_id)
+
+        return JsonResponse({}, status=200)
+
 
 @login_required
 @require_http_methods(["POST"])
@@ -149,7 +164,7 @@ def add_guest(request, service=adder):
 
     try:
         with transaction.atomic():
-            event = adder.add_guest(
+            event = service.add_guest(
                 user_id=user_id,
                 first_name=first_name,
                 last_name=last_name,

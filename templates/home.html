@@ -90,7 +90,7 @@ function showAllGifts() {
                 }
 
             } else {
-                alert(xhr.responseText)
+                alert("an error occurred performing this action")
             }
         }
     };
@@ -149,7 +149,7 @@ function showWeddingList() {
                    table.appendChild(row)
                 }
             } else {
-                alert(xhr.responseText)
+                alert("an error occurred performing this action")
             }
         }
     };
@@ -182,7 +182,7 @@ function addGift(e) {
                 let obj = JSON.parse(xhr.response);
                 alert(obj["message"]);
             } else {
-                alert(xhr.responseText)
+                alert("an error occurred performing this action")
             }
         }
     };
@@ -218,7 +218,7 @@ function removeGift(e) {
                 let obj = JSON.parse(xhr.response);
                 alert(obj["message"]);
             } else {
-                alert(xhr.responseText)
+                alert("an error occurred performing this action")
             }
         }
     };

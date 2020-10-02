@@ -95,10 +95,13 @@ function showAllGifts() {
         }
     };
     xhr.open("GET", "/api/v1/gifts");
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.send();
 }
 
 function showWeddingList() {
+    let userID = "{{ request.user.id }}";
+
     let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if (xhr.readyState === XMLHttpRequest.DONE){
@@ -150,7 +153,8 @@ function showWeddingList() {
             }
         }
     };
-    xhr.open("GET", "/api/v1/wedding-list");
+    xhr.open("GET", "/api/v1/wedding-list?user_id="+userID);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.send();
 }
 
@@ -186,6 +190,7 @@ function addGift(e) {
     formData.append("user_id", userID);
     xhr.open("POST", "/api/v1/wedding-list");
     xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.send(formData);
 }
 
@@ -221,6 +226,7 @@ function removeGift(e) {
     formData.append("user_id", userID);
     xhr.open("DELETE", "/api/v1/wedding-list");
     xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.send(formData);
 }
 

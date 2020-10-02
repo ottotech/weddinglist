@@ -10,6 +10,7 @@ from django.views.generic import TemplateView
 
 # Project imports
 from weddinglist.views import home
+from weddinglist.views import GuestAddingView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -17,5 +18,6 @@ urlpatterns = [
     path('logout', LogoutView.as_view(), name='logout'),
     path('', home, name='home'),
     path('api/', include("gifts.urls"), name='home'),
-    path('add-guest/', TemplateView.as_view(template_name="guest_adding.html")),
+    path('add-guest/', GuestAddingView.as_view()),
+    path('guest-view/', TemplateView.as_view(template_name="guest_view.html")),
 ]

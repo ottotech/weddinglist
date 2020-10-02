@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Guest</title>
+    <link href="{% static '/css/weddinglist.css' %}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<span><strong>Hello, {{ request.user.get_full_name|default:request.user.username }}.</strong></span>
+<br><br>
+<form action="/logout" method="post">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+
+<div style="width: 100%;">
+    <div style="width: 50%; float: left; margin-right: 30px">
+        <span><strong>gifts for purchase:</strong></span>
+        <br>
+        <br>
+        <table id="InviterWeddingList">
+        </table>
+    </div>
+</div>
+
+<script>
+window.onload = function () {
+    showWeddingListGifts();
+};
+
+function showWeddingListGifts() {
+    let userID = "{{ request.user.guest.inviter.id }}";
+
+    let xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE){
+            if (xhr.status === 200) {
+
+                let table = document.getElementById("InviterWeddingList");
+                let obj = JSON.parse(xhr.response);
+                console.log(obj);
+                let gifts = obj["gifts"];
+
+                let headerRow = document.createElement("tr");
+                let cols = ["name", "brand", "price", "status", "action"];
+                for (let j = 0; j < cols.length; j++) {
+                   let header = document.createElement("th");
+                   header.innerHTML = cols[j];
+                   headerRow.appendChild(header);
+                }
+
+                table.appendChild(headerRow);
+
+                for (let i = 0; i < gifts.length; i++) {
+                   let giftObj = gifts[i];
+                   let row = document.createElement("tr");
+                   let nameCell = document.createElement("td");
+                   nameCell.innerHTML = giftObj["name"];
+                   let brandCell = document.createElement("td");
+                   brandCell.innerHTML = giftObj["brand_name"];
+                   let priceCell = document.createElement("td");
+                   priceCell.innerHTML = giftObj["price"];
+                   let statusCell = document.createElement("td");
+                   statusCell.innerHTML = giftObj["status"];
+
+                   let purchaseBtn = document.createElement("button");
+                   purchaseBtn.type = "button";
+                   purchaseBtn.innerText = "Purchase";
+                   purchaseBtn.setAttribute("data-gift-id", giftObj["gift_id"]);
+                   purchaseBtn.setAttribute("data-gift-name", giftObj["name"]);
+                   purchaseBtn.style.cursor = "pointer";
+                   {#addBtn.onclick = addGift;#}
+
+                   row.appendChild(nameCell);
+                   row.appendChild(brandCell);
+                   row.appendChild(priceCell);
+                   row.appendChild(statusCell);
+                   row.appendChild(purchaseBtn);
+                   table.appendChild(row)
+                }
+
+            } else {
+                alert(xhr.responseText)
+            }
+        }
+    };
+    xhr.open("GET", "/api/v1/wedding-list?user_id="+userID);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.send();
+}
+</script>
+</body>
+</html>

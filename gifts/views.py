@@ -65,7 +65,9 @@ class UserWeddingListApiView(APIView):
 
     def get(self, request, service=lister):
 
-        user_wedding_list = service.get_user_wedding_list(request.user.id)
+        user_id = request.GET.get("user_id")
+
+        user_wedding_list = service.get_user_wedding_list(user_id)
 
         user_id = user_wedding_list.user.user_id
 

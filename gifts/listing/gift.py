@@ -92,3 +92,4 @@ class UserWeddingList(object):
     @property
     def list(self):
         return self.__list
+

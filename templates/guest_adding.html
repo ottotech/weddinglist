@@ -79,6 +79,7 @@
     formData.append("password", password);
     xhr.open("POST", "/api/v1/guests");
     xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.send(formData);
 }
 </script>

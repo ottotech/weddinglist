@@ -28,15 +28,17 @@ you can do the following:
 
 `python manage.py runserver 0.0.0.0:8080`
 
+3) You are ready to go, just go to your localhost at http://localhost/
+and you will see the app running.
 
-3) I have created a Django management command "prepare" to add fake data to 
+NOTE: 
+
+I have created a Django management command "prepare" to add fake data to 
 the database, this will be added automatically, but if you want to try it out
 just run:
 
 `python manage.py prepare`
 
-4) You are ready to go, just go to your localhost at http://localhost/
-and you will see the app running.
 
 ## TODO
 - missing tests

@@ -46,7 +46,9 @@ class Command(BaseCommand):
 
                 inv = Inventory.objects.filter(gift__name=g["name"])
                 if inv.exists():
-                    inv.get().quantity = g["in_stock_quantity"]
+                    inv = inv.get()
+                    inv.quantity = g["in_stock_quantity"]
+                    inv.save()
                 else:
                     gift_obj = Gift.objects.get(name=g["name"])
                     Inventory.objects.create(

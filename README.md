@@ -54,5 +54,3 @@ principles, so it has a lot of DDD on it.
 ## License
 
 Copyright ©‎ 2020, [ottotech](https://ottotech.site/)
-
-Released under MIT license, see [LICENSE](https://github.com/ottotech/godic/blob/master/LICENSE.md) for details.

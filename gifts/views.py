@@ -131,13 +131,15 @@ class UserWeddingListApiView(APIView):
                 event = service.remove_gift_from_user_wedding_list(
                     user_id=user_id, gift_id=gift_id)
 
+                logger.info(f"user ({user_id}) deleted gift ({gift_id})")
                 return JsonResponse({}, status=200)
 
         except GiftCouldNotBeDeletedErr as e:
+            logger.info(e)
             return JsonResponse({"message": str(e)}, status=400)
 
         except Exception as e:
-            print(e)
+            logger.error(e, exc_info=True)
             return JsonResponse({}, status=500)
 
     def put(self, request, service=purchaser):
@@ -150,6 +152,7 @@ class UserWeddingListApiView(APIView):
         event = service.purchase_gift(
             guest_id=request.user.id, gift_id=gift_id, user_id_of_wedding_list=user_id)
 
+        logger.info(f"guest ({request.user.id}) purchased gift ({gift_id})")
         return JsonResponse({}, status=200)
 
 
@@ -172,6 +175,8 @@ def add_guest(request, service=adder):
 
     try:
         with transaction.atomic():
+            # TODO: might be interesting to get more data from the
+            # domain event and put it in the logs for further analysis.
             event = service.add_guest(
                 user_id=user_id,
                 first_name=first_name,
@@ -179,15 +184,17 @@ def add_guest(request, service=adder):
                 username=username,
                 password=password
             )
-            logger.info(event.message)
+            logger.info(f"user {user_id} added guest {username}")
             return JsonResponse({}, status=200)
 
     except GuestDuplicatedErr as e:
+        logger.info(e)
         return JsonResponse({"message": str(e)}, status=400)
 
     except GuestUsernameDuplicatedErr as e:
+        logger.info(e)
         return JsonResponse({"message": str(e)}, status=400)
 
     except Exception as e:
-        print(e)
+        logger.error(e, exc_info=True)
         return JsonResponse({}, status=500)

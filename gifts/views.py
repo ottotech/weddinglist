@@ -166,7 +166,7 @@ def add_guest(request, service=adder):
     password = request.POST.get("password", "").strip()
     user_id = request.POST.get("user_id", "").strip()
 
-    # validation here for simplicity
+    # validation here for simplicity. Should be implemented in the adder service
     if any([
         x == ""
         for x in [first_name, last_name, username, password, user_id]

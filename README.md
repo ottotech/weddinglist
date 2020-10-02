@@ -29,7 +29,13 @@ you can do the following:
 `python manage.py runserver 0.0.0.0:8080`
 
 3) You are ready to go, just go to your localhost at http://localhost/
-and you will see the app running.
+and you will see the app running. To login use the following user:
+
+username:
+admin
+
+password:
+admin1234
 
 NOTE: 
 
@@ -39,6 +45,9 @@ just run:
 
 `python manage.py prepare`
 
+To run the tests:
+
+`python manage.py test gifts.tests`
 
 ## TODO
 - missing tests

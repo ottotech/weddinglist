@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+from os.path import normpath, join, abspath, dirname
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -142,3 +143,69 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+PROJECT_ROOT = abspath(join(dirname(__file__), "../"))
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(name)s %(levelname)s %(asctime)s %(funcName)s %(lineno)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+        'stack': {
+            'format': '%(name)s %(levelname)s %(asctime)s %(message)s %(request)s %(stack)s'
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'debug_file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': normpath(join(PROJECT_ROOT, 'logs/debug.log')),
+            'filters': ['require_debug_true'],
+            'formatter': 'verbose',
+            'maxBytes': 5 * 1024 * 1024,
+            'backupCount': 10,
+
+        },
+        'domain_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': normpath(join(PROJECT_ROOT, 'logs/domain.log')),
+            'formatter': 'simple',
+            'maxBytes': 5 * 1024 * 1024,
+            'backupCount': 10,
+        },
+        'error_file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': normpath(join(PROJECT_ROOT, 'logs/error.log')),
+            'formatter': 'verbose',
+            'maxBytes': 5 * 1024 * 1024,
+            'backupCount': 10,
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['debug_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'gifts': {
+            'handlers': ['domain_file', 'error_file'],
+            'level': 'DEBUG'
+        }
+    }
+}
+

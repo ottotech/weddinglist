@@ -1,3 +1,6 @@
+# Python imports
+import logging
+
 # Django imports
 from django.conf import settings
 from django.http import JsonResponse
@@ -39,6 +42,9 @@ lister = Lister(storage=storage)
 adder = Adder(storage=storage)
 deleter = Deleter(storage=storage)
 purchaser = Purchaser(storage=storage)
+
+
+logger = logging.getLogger("gifts")
 
 
 @login_required
@@ -103,12 +109,14 @@ class UserWeddingListApiView(APIView):
                         return JsonResponse({"message": "Product is out of stock."}, status=400)
                     return JsonResponse({}, status=500)
 
+                logger.info(f"user ({user_id}) added gift {gift_id}")
                 return JsonResponse({}, status=200)
 
         except DuplicatedErr as e:
             return JsonResponse({"message": str(e)}, status=400)
 
         except Exception as e:
+            logger.error(e, exc_info=True)
             return JsonResponse({}, status=500)
 
     @transaction.atomic
@@ -171,7 +179,7 @@ def add_guest(request, service=adder):
                 username=username,
                 password=password
             )
-
+            logger.info(event.message)
             return JsonResponse({}, status=200)
 
     except GuestDuplicatedErr as e:

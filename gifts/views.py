@@ -1,9 +1,11 @@
 # Python imports
 import logging
+import datetime
 
 # Django imports
 from django.conf import settings
 from django.http import JsonResponse
+from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
@@ -23,6 +25,7 @@ from gifts.adding import GuestUsernameDuplicatedErr
 from gifts.purchasing import Purchaser
 from gifts.purchasing import GiftPurchasedEvent
 from gifts.storage.django_orm import PSQLStorage
+from reports.render import render_to_pdf
 
 # Third party imports
 from rest_framework.views import APIView
@@ -198,3 +201,36 @@ def add_guest(request, service=adder):
     except Exception as e:
         logger.error(e, exc_info=True)
         return JsonResponse({}, status=500)
+
+
+@login_required
+@require_http_methods(["GET"])
+def generate_report(request, service=lister):
+
+    wedding_list = service.get_user_wedding_list(user_id=request.user.id)
+
+    purchased_gifts = []
+    not_purchased_gifts = []
+
+    for gift in wedding_list.list:
+        if gift.status == "Purchased":
+            purchased_gifts.append(gift)
+        elif gift.status == "Not Purchased":
+            not_purchased_gifts.append(gift)
+
+    context = {
+        "purchased": purchased_gifts,
+        "notpurchased": not_purchased_gifts,
+        "request": request
+    }
+
+    pdf = render_to_pdf("gifts_report.html", context)
+
+    today = datetime.date.today()
+
+    response = HttpResponse(pdf, content_type='application/pdf')
+    filename = 'wedding_list_%s.pdf' % today
+    content = "attachment; filename=%s" % filename
+    response['Content-Disposition'] = content
+
+    return response
